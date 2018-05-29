@@ -1,0 +1,29 @@
+{
+  "name": "appsync-subscription-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "apps/**/*"
+  ],
+  "dependencies": {
+    "@conduitvc/aws-utils": "^1.1.0",
+    "@conduitvc/config": "^1.0.0",
+    "aws-sdk": "^2.246.1",
+    "babel-eslint": "^8.2.3",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.11.0",
+    "jest": "^22.4.3",
+    "jest-runner-eslint": "^0.5.0",
+    "js-yaml": "^3.11.0",
+    "lodash.merge": "^4.6.1",
+    "mz": "^2.7.0",
+    "prettier": "^1.12.1"
+  },
+  "scripts": {
+    "test": "yarn jest --coverage",
+    "lint": "yarn eslint ."
+  }
+}

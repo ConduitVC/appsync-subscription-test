@@ -1,0 +1,108 @@
+service: serverless-graphql-appsync-dynamo
+
+frameworkVersion: ">=1.21.0 <2.0.0"
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+  region: us-east-2
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-appsync-plugin
+
+custom:
+  accountId: 229055845648 # replace this with your accountId
+  appSync:
+    name: quote-provider
+    authenticationType: AMAZON_COGNITO_USER_POOLS
+    userPoolConfig:
+      awsRegion: us-east-2 # required # region
+      defaultAction: ALLOW
+      userPoolId: us-east-2_PKa2Qpncv # replace this with your Cognito User Pool Id
+    # region: # defaults to provider region
+    # mappingTemplatesLocation: # defaults to mapping-templates
+    mappingTemplates:
+    serviceRole: "AppSyncServiceRole"
+    dataSources:
+      - type: AMAZON_DYNAMODB
+        name: QuoteRequest
+        description: 'Each item contains a customer quote request'
+        config:
+          tableName: 'QuoteRequest'
+          serviceRoleArn: "arn:aws:iam::${self:custom.accountId}:role/Dynamo-${self:custom.appSync.serviceRole}"
+      - type: AMAZON_DYNAMODB
+        name: QuoteResponse
+        description: 'Each item contains a response to a customer quote request'
+        config:
+          tableName: 'QuoteResponse'
+          serviceRoleArn: "arn:aws:iam::${self:custom.accountId}:role/Dynamo-${self:custom.appSync.serviceRole}"
+resources:
+  Resources:
+    QuoteRequestTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        ProvisionedThroughput:
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10
+        TableName: "QuoteRequest"
+    QuoteResponseTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        ProvisionedThroughput:
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10
+        TableName: "QuoteResponse"
+    AppSyncServiceRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        RoleName: "Dynamo-AppSyncServiceRole"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            -
+              Effect: "Allow"
+              Principal:
+                Service:
+                  - "appsync.amazonaws.com"
+              Action:
+                - "sts:AssumeRole"
+        Policies:
+          -
+            PolicyName: "Dynamo-AppSyncServiceRole-Policy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                -
+                  Effect: "Allow"
+                  Action:
+                    - "dynamodb:Query"
+                    - "dynamodb:BatchWriteItem"
+                    - "dynamodb:GetItem"
+                    - "dynamodb:DeleteItem"
+                    - "dynamodb:PutItem"
+                    - "dynamodb:Scan"
+                    - "dynamodb:UpdateItem"
+                  Resource:
+                    - "arn:aws:dynamodb:us-east-2:*:table/QuoteRequest"
+                    - "arn:aws:dynamodb:us-east-2:*:table/QuoteRequest/*"
+                    - "arn:aws:dynamodb:us-east-2:*:table/QuoteResponse"
+                    - "arn:aws:dynamodb:us-east-2:*:table/QuoteResponse/*"

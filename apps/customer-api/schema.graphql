@@ -1,0 +1,25 @@
+schema {
+  mutation: Mutation
+  query: Query
+} 
+
+type Query {
+  quoteRequest(id: ID!): QuoteRequest
+}
+
+type Mutation {
+  requestQuote(requestQuote: RequestQuoteInput!): QuoteRequest!
+}
+
+input RequestQuoteInput {
+  customerId: String!
+  commodityId: String!
+  amount: Int!
+}
+
+type QuoteRequest {
+  id: String!
+  customerId: String!
+  commodityId: String!
+  amount: Int!
+}

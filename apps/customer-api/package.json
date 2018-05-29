@@ -1,0 +1,14 @@
+{
+  "name": "customer-api-test",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "deploy-appsync": "serverless deploy-appsync",
+    "update-appsync": "serverless update-appsync",
+    "delete-appsync": "serverless delete-appsync"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.176.0",
+    "serverless-appsync-plugin": "^0.0.5"
+  }
+}
