@@ -4,22 +4,20 @@ schema {
 } 
 
 type Query {
-  quoteRequest(id: ID!): QuoteRequest
+  quoteRequest(id: ID!): QuoteRequestResponse
 }
 
 type Mutation {
-  requestQuote(requestQuote: RequestQuoteInput!): QuoteRequest!
+  requestQuote(quoteRequest: QuoteRequestInput!): QuoteRequestResponse!
 }
 
-input RequestQuoteInput {
-  customerId: String!
-  commodityId: String!
+input QuoteRequestInput {
+  commodity: String!
   amount: Int!
 }
 
-type QuoteRequest {
+type QuoteRequestResponse {
   id: String!
-  customerId: String!
-  commodityId: String!
+  commodity: String!
   amount: Int!
 }

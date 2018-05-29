@@ -1,1 +1,5 @@
-$util.toJson($context.result)
+{
+	"id" : "${context.result.id}",
+	"commodity" : "${context.result.commodity}",
+	"amount" : ${context.result.amount}
+}
