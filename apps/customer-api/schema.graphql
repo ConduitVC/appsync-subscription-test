@@ -1,23 +1,38 @@
 schema {
   mutation: Mutation
   query: Query
+  subscription: Subscription
 } 
 
 type Query {
-  quoteRequest(id: ID!): QuoteRequestResponse
+  openQuoteRequests: [QuoteRequest]!
 }
 
 type Mutation {
-  requestQuote(quoteRequest: QuoteRequestInput!): QuoteRequestResponse!
+  requestQuote(quoteRequest: QuoteRequestInput!): QuoteRequest!
+}
+
+type Subscription {
+  subscribeToQuoteRequest: QuoteRequest!
+    @aws_subscribe(mutations: ["requestQuote"])
+}
+
+enum quoteRequestStatus {
+	Cancelled
+	Open
+	Filled
+	Closed
+}
+
+type QuoteRequest {
+  id: String!
+  customerId: String!
+  commodity: String!
+  amount: Int!
+	status: quoteRequestStatus!
 }
 
 input QuoteRequestInput {
-  commodity: String!
-  amount: Int!
-}
-
-type QuoteRequestResponse {
-  id: String!
   commodity: String!
   amount: Int!
 }

@@ -25,10 +25,15 @@ custom:
     # mappingTemplatesLocation: # defaults to mapping-templates
     mappingTemplates:
       - dataSource: QuoteRequest
+        type: Query
+        field: openQuoteRequests
+        request: "openQuoteRequests-request-mapping-template.txt"
+        response: "openQuoteRequests-response-mapping-template.txt"
+      - dataSource: QuoteRequest
         type: Mutation
         field: requestQuote
-        request: "quote-request-mapping-template.txt"
-        response: "quote-request-response-mapping-template.txt"
+        request: "requestQuote-request-mapping-template.txt"
+        response: "requestQuote-response-mapping-template.txt"
     serviceRole: "AppSyncServiceRole"
     dataSources:
       - type: AMAZON_DYNAMODB

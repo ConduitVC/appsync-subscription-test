@@ -1,6 +1,7 @@
 #if($context.identity.sub)
   #set($attributeValues=$ctx.args.quoteRequest)
   #set( $values = $attributeValues.put("customerId", "${context.identity.sub}") )
+  #set( $values = $attributeValues.put("status", "Open") )
   {
     "version" : "2017-02-28",
     "operation" : "PutItem",
