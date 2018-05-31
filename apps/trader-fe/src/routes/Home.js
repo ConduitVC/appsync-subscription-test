@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 
 const quoteRequestSubscription = gql`
-	{
+	subscription NewQuoteRequestSub {
     subscribeToQuoteRequest {
         id
         amount
@@ -30,15 +30,24 @@ class Home extends React.Component {
     quoteRequests: []
   }
 
+  componentDidMount() {
+    this.subscription = this.props.subscribeToNewQuoteRequest();
+  }
+
+  componentWillUnmount() {
+    this.subscription(); // NOTE removes the subscription
+  }
+
   render() {
     const { data } = this.props;
-
-    if(!data) return null;
+    
+    console.log(this.props);
+    if(!data || !data.openQuoteRequests) return null;
 
     return (
       <ul>
-        {openQuoteRequests.map(quoteRequest => (
-          <li>
+        {data.openQuoteRequests.map(quoteRequest => (
+          <li key={quoteRequest.id}>
             <span>Customer: {quoteRequest.customerId} --> </span>
             <span>{quoteRequest.commodity}</span>
             <span>[{quoteRequest.amount}]</span>
@@ -50,30 +59,29 @@ class Home extends React.Component {
 }
 
 export default graphql(openQuoteRequests, {
-  options: () => ({
-    fetchPolicy: 'cache-and-network',
-  }),
   props: props => ({
-    subscribeToNewQuoteRequest: params =>
+    ...props,
+    subscribeToNewQuoteRequest: () =>
       props.data.subscribeToMore({
         document: quoteRequestSubscription,
-        variables: params,
-        // TODO BUG: need to filter tweets based on more fine grained / unique value if possible
-        updateQuery: (prev, { subscriptionData: { data: { subscribeToQuoteRequest } } }) => {
-          console.log(prev);
+        variables: {},
+        updateQuery: (prev, { subscriptionData: { data, errors } }) => {
+          if(errors || !data) return { ...prev };
+
           const alreadyExists = prev.openQuoteRequests.find(
-            item => item.id === subscribeToQuoteRequest.id
+            item => item.id === data.subscribeToQuoteRequest.id
           );
           if (alreadyExists) {
             return { ...prev };
           }
-          return {
-            ...prev,
-            openQuoteRequests: [
-              ...prev.openQuoteRequests,
-              subscribeToQuoteRequest,
-            ]
-          }
+          
+          data.subscribeToQuoteRequest.customerId = '12';
+          console.log(Object.assign( {}, prev,
+            { openQuoteRequests: [ data.subscribeToQuoteRequest, ...prev.openQuoteRequests ] }
+          ));
+          return Object.assign( {}, prev,
+            { openQuoteRequests: [ data.subscribeToQuoteRequest, ...prev.openQuoteRequests ] }
+          )
         }
       })
   }),

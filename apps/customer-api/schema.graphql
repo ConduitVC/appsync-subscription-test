@@ -14,7 +14,7 @@ type Mutation {
 
 type Subscription {
   subscribeToQuoteRequest: QuoteRequest!
-    @aws_subscribe(mutations: ["requestQuote"])
+  @aws_subscribe(mutations: ["requestQuote"])
 }
 
 enum quoteRequestStatus {
