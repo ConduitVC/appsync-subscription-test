@@ -10,29 +10,53 @@ type Query {
 
 type Mutation {
   requestQuote(quoteRequest: QuoteRequestInput!): QuoteRequest!
+  respondToQuote(quoteRequestId: ID!, response: QuoteResponseInput!): QuoteResponse!
+  respondedToQuote(quoteRequestId: ID!): QuoteRequest!
 }
 
 type Subscription {
   subscribeToQuoteRequest: QuoteRequest!
   @aws_subscribe(mutations: ["requestQuote"])
+  subscribeToQuoteResponse: QuoteResponse!
+  @aws_subscribe(mutations: ["respondToQuote"])
 }
 
 enum quoteRequestStatus {
 	Cancelled
 	Open
-	Filled
+	RespondedTo
 	Closed
 }
 
+enum quoteResponseStatus {
+	Open
+  Rejected
+  Expired
+}
+
 type QuoteRequest {
-  id: String!
+  id: ID!
   customerId: String!
   commodity: String!
   amount: Int!
 	status: quoteRequestStatus!
 }
 
+type QuoteResponse {
+  id: ID!
+  quoteRequestId: ID!
+  ask: Float!
+	expires: Float!
+  status: quoteResponseStatus!
+  traderId: String!
+}
+
 input QuoteRequestInput {
   commodity: String!
   amount: Int!
+}
+
+input QuoteResponseInput {
+  ask: Float!
+  expires: Float
 }

@@ -1,0 +1,15 @@
+#set( $values = $ctx.args.response.put("traderId", "${context.identity.sub}") )
+#set( $values = $ctx.args.response.put("status", "Open") )
+#set( $values = $ctx.args.response.put("quoteRequestId", "${ctx.args.quoteRequestId}") )
+#if(!$ctx.args.expires)
+  #set( $expires = $util.time.nowEpochMilliSeconds() + 300000 )
+  #set( $values = $ctx.args.response.put("expires", $expires ))
+#end
+{
+  "version" : "2017-02-28",
+  "operation" : "PutItem",
+  "key": {
+      "id" : $util.dynamodb.toDynamoDBJson($util.autoId())
+  },
+  "attributeValues": $util.dynamodb.toMapValuesJson($ctx.args.response)
+}

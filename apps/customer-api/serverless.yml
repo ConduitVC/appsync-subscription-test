@@ -34,6 +34,22 @@ custom:
         field: requestQuote
         request: "requestQuote-request-mapping-template.txt"
         response: "requestQuote-response-mapping-template.txt"
+      - dataSource: QuoteResponse
+        type: Mutation
+        field: respondToQuote
+        request: "respondToQuote-request-mapping-template.txt"
+        response: "respondToQuote-response-mapping-template.txt"
+      - dataSource: QuoteRequest
+        type: Mutation
+        field: respondedToQuote
+        request: "respondedToQuote-request.txt"
+        response: "respondedToQuote-response.txt"
+      - dataSource: QuoteRequestSubscriber
+        type: Subscription
+        field: subscribeToQuoteRequest
+        request: "subscribeToQuoteRequest-request-mapping-template.txt"
+        response: "subscribeToQuoteRequest-response-mapping-template.txt"
+        
     serviceRole: "AppSyncServiceRole"
     dataSources:
       - type: AMAZON_DYNAMODB
@@ -47,6 +63,11 @@ custom:
         description: 'Each item contains a response to a customer quote request'
         config:
           tableName: 'QuoteResponse'
+          serviceRoleArn: "arn:aws:iam::${self:custom.accountId}:role/Dynamo-${self:custom.appSync.serviceRole}"
+      - type: NONE
+        name: QuoteRequestSubscriber
+        description: 'Non-datasource datasource'
+        config:
           serviceRoleArn: "arn:aws:iam::${self:custom.accountId}:role/Dynamo-${self:custom.appSync.serviceRole}"
 resources:
   Resources:

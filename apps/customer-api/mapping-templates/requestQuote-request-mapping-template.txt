@@ -1,14 +1,13 @@
 #if($context.identity.sub)
-  #set($attributeValues=$ctx.args.quoteRequest)
-  #set( $values = $attributeValues.put("customerId", "${context.identity.sub}") )
-  #set( $values = $attributeValues.put("status", "Open") )
+  #set( $values = $ctx.args.quoteRequest.put("customerId", "${context.identity.sub}") )
+  #set( $values = $ctx.args.quoteRequest.put("status", "Open") )
   {
     "version" : "2017-02-28",
     "operation" : "PutItem",
     "key": {
         "id" : $util.dynamodb.toDynamoDBJson($util.autoId())
     },
-    "attributeValues": $util.dynamodb.toMapValuesJson($attributeValues)
+    "attributeValues": $util.dynamodb.toMapValuesJson($context.arguments.quoteRequest)
   }
 #else
   $utils.unauthorized()

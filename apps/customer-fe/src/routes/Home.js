@@ -8,6 +8,7 @@ const requestQuote =  gql`
       id
       amount
       commodity
+      customerId
     }
   }
 `;
@@ -49,7 +50,7 @@ class Home extends React.Component {
      })
   }
 
-  state = {}
+  state = { }
 
   render() {
     return (
