@@ -40,7 +40,7 @@ custom:
         request: "respondToQuote-request-mapping-template.txt"
         response: "respondToQuote-response-mapping-template.txt"
       - dataSource: QuoteRequest
-        type: Mutation
+        type: CreatedQuoteResponse
         field: respondedToQuote
         request: "respondedToQuote-request.txt"
         response: "respondedToQuote-response.txt"

@@ -30,9 +30,9 @@ const respondToQuote = gql`
       id 
       ask
       expires
-    }
-    respondedToQuote(quoteRequestId: $quoteRequestId) {
-      id
+      respondedToQuote(quoteRequestId: $quoteRequestId) {
+        id
+      }
     }
   }
 `;

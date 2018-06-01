@@ -10,14 +10,13 @@ type Query {
 
 type Mutation {
   requestQuote(quoteRequest: QuoteRequestInput!): QuoteRequest!
-  respondToQuote(quoteRequestId: ID!, response: QuoteResponseInput!): QuoteResponse!
-  respondedToQuote(quoteRequestId: ID!): QuoteRequest!
+  respondToQuote(quoteRequestId: ID!, response: QuoteResponseInput!): CreatedQuoteResponse!
 }
 
 type Subscription {
   subscribeToQuoteRequest: QuoteRequest!
   @aws_subscribe(mutations: ["requestQuote"])
-  subscribeToQuoteResponse: QuoteResponse!
+  subscribeToQuoteResponse: CreatedQuoteResponse!
   @aws_subscribe(mutations: ["respondToQuote"])
 }
 
@@ -49,6 +48,15 @@ type QuoteResponse {
 	expires: Float!
   status: quoteResponseStatus!
   traderId: String!
+}
+
+type CreatedQuoteResponse {
+  id: ID!
+  ask: Float!
+	expires: Float!
+  status: quoteResponseStatus!
+  traderId: String!
+  respondedToQuote(quoteRequestId: ID!): QuoteRequest!
 }
 
 input QuoteRequestInput {
