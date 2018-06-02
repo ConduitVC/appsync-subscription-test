@@ -29,6 +29,11 @@ custom:
         field: openQuoteRequests
         request: "openQuoteRequests-request-mapping-template.txt"
         response: "openQuoteRequests-response-mapping-template.txt"
+      - dataSource: QuoteResponse
+        type: Query
+        field: openQuoteResponses
+        request: "openQuoteResponses-request.txt"
+        response: "openQuoteResponses-response.txt"
       - dataSource: QuoteRequest
         type: Mutation
         field: requestQuote
@@ -44,12 +49,16 @@ custom:
         field: respondedToQuote
         request: "respondedToQuote-request.txt"
         response: "respondedToQuote-response.txt"
-      - dataSource: QuoteRequestSubscriber
+      - dataSource: SubscriberPassthrough
         type: Subscription
         field: subscribeToQuoteRequest
         request: "subscribeToQuoteRequest-request-mapping-template.txt"
         response: "subscribeToQuoteRequest-response-mapping-template.txt"
-        
+      - dataSource: SubscriberPassthrough
+        type: Subscription
+        field: subscribeToQuoteResponse
+        request: "subscribeToQuoteResponse-request.txt"
+        response: "subscribeToQuoteResponse-response.txt" 
     serviceRole: "AppSyncServiceRole"
     dataSources:
       - type: AMAZON_DYNAMODB
@@ -65,7 +74,7 @@ custom:
           tableName: 'QuoteResponse'
           serviceRoleArn: "arn:aws:iam::${self:custom.accountId}:role/Dynamo-${self:custom.appSync.serviceRole}"
       - type: NONE
-        name: QuoteRequestSubscriber
+        name: SubscriberPassthrough
         description: 'Non-datasource datasource'
         config:
           serviceRoleArn: "arn:aws:iam::${self:custom.accountId}:role/Dynamo-${self:custom.appSync.serviceRole}"

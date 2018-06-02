@@ -1,0 +1,18 @@
+#set($expression = "")
+#set($expressionValues = {})
+#set( $values = $expressionValues.put(":status", $util.dynamodb.toDynamoDB("Open")) )
+#set( $values = $expressionValues.put(":customerId", "${ctx.identity.sub}") )
+#set($expressionNames = {})
+#set( $names = $expressionNames.put("#status", "status") )
+#set( $names = $expressionNames.put("#customerId", "customerId") )
+{
+  "version" : "2017-02-28",
+  "operation" : "Scan",
+  "filter" : {
+    "expression": "#status = :status AND #customerId = :customerId",
+    "expressionNames" : $utils.toJson($expressionNames),
+    "expressionValues" : $utils.toJson($expressionValues),
+  },
+  "limit": #if($context.arguments.limit) $context.arguments.limit #else 10 #end,
+  "nextToken": #if($context.arguments.nextToken) "$context.arguments.nextToken" #else null #end
+}

@@ -66,8 +66,6 @@ class Home extends React.Component {
   handleCreateQuoteResponse = quoteRequestId => ( async () => {
     const ask = Number.parseFloat(this.state.asks[quoteRequestId])
 
-    console.log(ask);
-    console.log(quoteRequestId);
     if(Number.isNaN(ask)) {
       return
     }
@@ -82,8 +80,6 @@ class Home extends React.Component {
         },
       })).data.respondToQuote;
     
-      console.log(quoteResponse);
-
     } catch (error) {
       console.log(error);
     }   

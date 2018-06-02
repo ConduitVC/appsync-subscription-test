@@ -6,6 +6,7 @@ schema {
 
 type Query {
   openQuoteRequests: [QuoteRequest]!
+  openQuoteResponses: [QuoteResponse]!
 }
 
 type Mutation {
@@ -43,6 +44,7 @@ type QuoteRequest {
 
 type QuoteResponse {
   id: ID!
+  quoteRequest: QuoteRequest!
   quoteRequestId: ID!
   ask: Float!
 	expires: Float!
