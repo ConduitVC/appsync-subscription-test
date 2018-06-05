@@ -1,0 +1,14 @@
+#set($expression = "")
+#set($expressionValues = {})
+#set( $values = $expressionValues.put(":quoteRequestId", $util.dynamodb.toDynamoDB("${ctx.source.id}")) )
+#set($expressionNames = {})
+#set( $names = $expressionNames.put("#quoteRequestId", "quoteRequestId") )
+{
+  "version" : "2017-02-28",
+  "operation" : "Scan",
+  "filter" : {
+    "expression": "#quoteRequestId = :quoteRequestId",
+    "expressionNames" : $utils.toJson($expressionNames),
+    "expressionValues" : $utils.toJson($expressionValues),
+  },
+}

@@ -1,4 +1,6 @@
-#if(${context.identity.sub} != ${context.arguments.customerId})
+#if(!${context.arguments.customerId})
+  null
+#elseif(${context.identity.sub} != ${context.arguments.customerId})
 	$utils.unauthorized()
 #else
 	null

@@ -1,13 +1,23 @@
-#set($expression = "")
+
+
+
+#set($expression = "#status = :status")
 #set($expressionValues = {})
 #set( $values = $expressionValues.put(":status", $util.dynamodb.toDynamoDB("Open")) )
 #set($expressionNames = {})
 #set( $names = $expressionNames.put("#status", "status") )
+#foreach($group in $context.identity.claims.get("cognito:groups"))
+  #if($group == "customer")
+    #set( $values = $expressionValues.put(":customerId", $util.dynamodb.toDynamoDB("${ctx.identity.sub}")) )
+    #set( $names = $expressionNames.put("#customerId", "customerId") )
+    #set($expression = "${expression} AND #customerId = :customerId")
+  #end
+#end
 {
   "version" : "2017-02-28",
   "operation" : "Scan",
   "filter" : {
-    "expression": "#status = :status",
+    "expression": "${expression}",
     "expressionNames" : $utils.toJson($expressionNames),
     "expressionValues" : $utils.toJson($expressionValues),
   },

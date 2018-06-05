@@ -13,9 +13,9 @@ const quoteRequestSubscription = gql`
   }
 `;
 
-const openQuoteRequests = gql`
-	{
-    openQuoteRequests {
+const quoteRequests = gql`
+	query openRequests($query: [AttributeFilter]) {
+    quoteRequests(query: $query) {
         id
         amount
         commodity
@@ -30,7 +30,7 @@ const respondToQuote = gql`
       id 
       ask
       expires
-      respondedToQuote(quoteRequestId: $quoteRequestId) {
+      respondedToQuote {
         id
       }
     }
@@ -88,11 +88,11 @@ class Home extends React.Component {
   render() {
     const { data } = this.props;
     
-    if(!data || !data.openQuoteRequests) return null;
+    if(!data || !data.quoteRequests) return null;
 
     return (
       <ul>
-        {data.openQuoteRequests.map(quoteRequest => (
+        {data.quoteRequests.map(quoteRequest => (
           <li key={quoteRequest.id}>
             <span>Customer: {quoteRequest.customerId} --> </span>
             <span>{quoteRequest.commodity}</span>
@@ -107,9 +107,16 @@ class Home extends React.Component {
 }
 
 export default compose(
-  graphql(openQuoteRequests, {
+  graphql(quoteRequests, {
     options: {
       fetchPolicy: 'network-only',
+      variables: {
+        query: [{
+          expression: "#status = :status",
+          expressionName: "status",
+          expressionStringValue: "Open",
+        }],
+      },
     },
     props: props => ({
       ...props,
@@ -120,7 +127,7 @@ export default compose(
           updateQuery: (prev, { subscriptionData: { data, errors } }) => {
             if(errors || !data) return { ...prev };
 
-            const alreadyExists = prev.openQuoteRequests.find(
+            const alreadyExists = prev.quoteRequests.find(
               item => item.id === data.subscribeToQuoteRequest.id
             );
             if (alreadyExists) {
@@ -128,7 +135,7 @@ export default compose(
             }
             
             return Object.assign( {}, prev,
-              { openQuoteRequests: [ data.subscribeToQuoteRequest, ...prev.openQuoteRequests ] }
+              { quoteRequests: [ data.subscribeToQuoteRequest, ...prev.quoteRequests ] }
             )
           }
         })

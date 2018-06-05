@@ -5,8 +5,7 @@ schema {
 } 
 
 type Query {
-  openQuoteRequests: [QuoteRequest]!
-  openQuoteResponses: [QuoteResponse]!
+  quoteRequests(query: [AttributeFilter]): [QuoteRequest]!
 }
 
 type Mutation {
@@ -17,7 +16,7 @@ type Mutation {
 type Subscription {
   subscribeToQuoteRequest: QuoteRequest!
   @aws_subscribe(mutations: ["requestQuote"])
-  subscribeToQuoteResponse: CreatedQuoteResponse!
+  subscribeToQuoteResponse: CreatedQuoteResponse
   @aws_subscribe(mutations: ["respondToQuote"])
 }
 
@@ -40,16 +39,7 @@ type QuoteRequest {
   commodity: String!
   amount: Int!
 	status: quoteRequestStatus!
-}
-
-type QuoteResponse {
-  id: ID!
-  quoteRequest: QuoteRequest!
-  quoteRequestId: ID!
-  ask: Float!
-	expires: Float!
-  status: quoteResponseStatus!
-  traderId: String!
+  quoteResponse: SimpleResponse
 }
 
 type CreatedQuoteResponse {
@@ -58,7 +48,16 @@ type CreatedQuoteResponse {
 	expires: Float!
   status: quoteResponseStatus!
   traderId: String!
-  respondedToQuote(quoteRequestId: ID!): QuoteRequest!
+  respondedToQuote: QuoteRequest!
+}
+
+type SimpleResponse {
+  id: ID!
+  quoteRequestId: ID!
+  ask: Float!
+	expires: Float!
+  status: quoteResponseStatus!
+  traderId: String!
 }
 
 input QuoteRequestInput {
@@ -69,4 +68,11 @@ input QuoteRequestInput {
 input QuoteResponseInput {
   ask: Float!
   expires: Float
+}
+
+input AttributeFilter {
+  expression: String!
+  expressionName: String!
+  expressionNumberValue: Float
+  expressionStringValue: String
 }

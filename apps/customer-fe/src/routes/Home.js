@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 
@@ -13,17 +13,18 @@ const requestQuote =  gql`
   }
 `;
 
-const openQuoteResponses = gql`
+const quoteRequests = gql`
 	{
-    openQuoteResponses {
+    quoteRequests {
+      id
+      commodity
+      amount
+      status
+      quoteResponse {
         id
         ask
         expires
-        quoteResponse {
-          id
-          commodity
-          amount
-        }
+      }
     }
   }
 `;
@@ -34,7 +35,7 @@ const quoteResponseSubscription = gql`
         id
         ask
         expires
-        quoteRequest {
+        respondedToQuote {
           id
           amount
           commodity
@@ -92,6 +93,9 @@ class Home extends React.Component {
      })
   }
 
+  handleAcceptQuoteResponse = quoteResponseId => async e => {
+  }
+
   handlePassQuoteResponse = quoteResponseId => async e => {
   }
 
@@ -120,13 +124,18 @@ class Home extends React.Component {
           <button onClick={this.handleButtonClick}>Request Quote</button>
         </form>
         <ul>
-          {data && data.openQuoteResponses && data.openQuoteResponses.map(quoteResponse => (
-            <li key={quoteResponse.id}>
-              <span>Commodity:{quoteResponse.quoteRequest.commodity}</span>
-              <span>[{quoteResponse.quoteRequest.amount}]</span>
-              <span>[{quoteResponse.ask}]</span>
-              <button onClick={this.handlePassQuoteResponse(quoteResponse.id)}>Pass</button>
-              <button onClick={this.handleAcceptQuoteResponse(quoteResponse.id)}>Accept</button>
+          {data && data.quoteRequests && data.quoteRequests.map(quoteRequest => (
+            <li key={quoteRequest.id}>
+              <span>status:{quoteRequest.status}</span>
+              <span>Commodity:{quoteRequest.commodity}</span>
+              <span>[{quoteRequest.amount}]</span>
+              {quoteRequest.quoteResponse && (
+                <Fragment>
+                  <span>[{quoteRequest.quoteResponse.ask}]</span>
+                  <button onClick={this.handlePassQuoteResponse(quoteRequest.quoteResponse.id)}>Pass</button>
+                  <button onClick={this.handleAcceptQuoteResponse(quoteRequest.quoteResponse.id)}>Accept</button>
+                </Fragment>
+              )}
             </li>
           ))}
         </ul>
@@ -136,7 +145,7 @@ class Home extends React.Component {
 }
 
 export default compose(
-  graphql(openQuoteResponses, {
+  graphql(quoteRequests, {
     options: {
       fetchPolicy: 'network-only',
     },
@@ -148,16 +157,43 @@ export default compose(
           variables: {},
           updateQuery: (prev, { subscriptionData: { data, errors } }) => {
             if(errors || !data) return { ...prev };
+        
+            const newQuoteResponse = data.subscribeToQuoteResponse;
 
-            const alreadyExists = prev.openQuoteResponses.find(
-              item => item.id === data.subscribeToQuoteResponse.id
+            const alreadyExists = prev.quoteRequests.find(
+              item => item.id === newQuoteResponse.respondedToQuote.id
             );
+
             if (alreadyExists) {
-              return { ...prev };
+              return {
+                ...prev,
+                quoteRequests: prev.quoteRequests.map(quoteRequest => {
+                  if(quoteRequest.id != newQuoteResponse.respondedToQuote.id) {
+                    return quoteRequest
+                  } else {
+                    return {
+                      ...quoteRequest,
+                      status: 'RespondedTo',
+                      quoteResponse: { ...newQuoteResponse, respondedToQuote: undefined }
+                    }
+                  }
+                })
+              };
             }
-            
+
+           
+            const newItem = {
+              id: newQuoteResponse.respondedToQuote.id,
+              commodity: newQuoteResponse.respondedToQuote.commodity,
+              amount: newQuoteResponse.respondedToQuote.amount,
+              quoteResponse: {
+                id: newQuoteResponse.id,
+                ask: newQuoteResponse.ask,
+                expires: newQuoteResponse.expires,
+              }
+            } 
             return Object.assign( {}, prev,
-              { openQuoteResponses: [ data.subscribeToQuoteResponse, ...prev.openQuoteResponses ] }
+              { quoteResponses: [ newItem, ...prev.quoteRequests ] }
             )
           }
         })

@@ -26,14 +26,14 @@ custom:
     mappingTemplates:
       - dataSource: QuoteRequest
         type: Query
-        field: openQuoteRequests
-        request: "openQuoteRequests-request-mapping-template.txt"
-        response: "openQuoteRequests-response-mapping-template.txt"
+        field: quoteRequests
+        request: "quoteRequests-request.txt"
+        response: "list-response.txt"
       - dataSource: QuoteResponse
-        type: Query
-        field: openQuoteResponses
-        request: "openQuoteResponses-request.txt"
-        response: "openQuoteResponses-response.txt"
+        type: QuoteRequest
+        field: quoteResponse
+        request: "quoteResponse-request.txt"
+        response: "quoteResponse-response.txt"
       - dataSource: QuoteRequest
         type: Mutation
         field: requestQuote
